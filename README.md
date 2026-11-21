@@ -32,7 +32,7 @@ RCA Information Experience Design / Across RCA 交互项目。原生 HTML、CSS�
 node scripts/preview.mjs
 ```
 
-打开 http://127.0.0.1:8766/，管理页为 http://127.0.0.1:8766/admin。本地预览仅绑定回环地址，并为本机注入测试管理员身份。本地数据库在 .local/preview.sqlite，与线上 D1 分离。
+打开 [本地体验](http://127.0.0.1:8766/)，管理页为 [本地管理页](http://127.0.0.1:8766/admin)。本地预览仅绑定回环地址，并为本机注入测试管理员身份。本地数据库在 .local/preview.sqlite，与线上 D1 分离。
 
 ```sh
 node scripts/build.mjs
