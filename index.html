@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#192431">
+<meta name="description" content="Machine Sensorium — an interactive Across RCA project exploring machine perception and ethical responsibility.">
+<title>AI HUB · Machine Sensorium</title>
+<link rel="stylesheet" href="styles.css">
+<script src="content.js" defer></script>
+<script src="collection.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+ <button id="home" class="brand" aria-label="AI HUB home"><span class="rca-mark">RCA</span><span class="brand-word">ROYAL COLLEGE<br>OF ART</span></button>
+ <nav class="top-nav" aria-label="Main navigation"><button data-route="courses" data-x="myCourses"></button><button data-route="hub">AI HUB</button></nav>
+ <div class="header-right"><span class="prototype-label">ACROSS RCA · PROTOTYPE</span><label class="sr-only" for="locale">Language</label><select id="locale"><option value="en">English</option><option value="zh">中文</option><option value="ko">한국어</option></select><span class="avatar" aria-label="Machine Sensorium">MS</span></div>
+</header>
+<div class="page-grid">
+<aside class="course-sidebar" id="courseSidebar">
+ <div class="sidebar-heading"><span data-x="courseIndex"></span><button id="sidebarToggle" aria-label="Toggle course index" aria-expanded="true">☰</button></div>
+ <div id="hubNav" class="hub-nav"></div>
+ <nav id="progressNav" aria-label="Activity steps" hidden></nav>
+ <div class="sidebar-bottom"><p id="collectionStatus" role="status"></p><span id="progressLabel"></span><progress id="courseProgress" max="6" value="0"></progress><p data-x="projectCredit"></p></div>
+</aside>
+<div class="main-column">
+ <div class="breadcrumb" id="breadcrumb" aria-label="Breadcrumb"></div>
+ <main id="main" tabindex="-1">
+ <div id="portalViews"></div>
+ <div id="activityViews" hidden>
+ <div class="activity-heading"><div><span class="section-kicker">AI HUB / ETHICS</span><h1>Machine Sensorium</h1></div><span id="completionBadge" class="completion-badge"></span></div>
+ <p id="collectionNotice" class="collection-notice"></p><div class="activity-tabs"><span class="tab-active" data-x="activity"></span><button id="activityAbout" data-x="about"></button><span id="stepCounter" class="step-count"></span></div>
+ 
+<section class="journey-step welcome" data-step="0"><div class="welcome-copy"><div class="eyebrow" data-j="homeTag"></div><h1 data-j="homeTitle"></h1><p class="welcome-intro" data-j="homeIntro"></p><p class="welcome-body" data-j="homeBody"></p><button class="primary" id="start" data-j="start"></button><p class="micro" data-j="homeNote"></p></div><div class="welcome-art"><canvas id="introAscii" role="img" aria-label="An iridescent breathing ASCII form"></canvas><span class="art-coordinate mono">MACHINE SENSORIUM / IED</span><span class="art-caption" data-j="artCaption"></span></div></section>
+<section class="journey-step" data-step="1" hidden><div class="section-intro"><div class="eyebrow" data-j="scenarioTag"></div><h2 tabindex="-1" data-j="scenarioTitle"></h2><p data-j="scenarioBody"></p></div><div class="scenario"><div class="scenario-symbol" aria-hidden="true">↻<span>ERROR_002</span></div><div id="firstChoices" class="choices"></div></div><p class="micro" data-j="scenarioHint"></p><div class="step-actions"><button class="text-button" data-back="0" data-j="back"></button><span class="mono"></span></div></section>
+<section class="journey-step" data-step="2" hidden><div class="section-intro"><div class="eyebrow" data-j="researchTag"></div><h2 tabindex="-1" data-j="researchTitle"></h2><p data-j="researchBody"></p></div><div class="research-grid" id="researchCards"></div><p class="research-note micro" data-j="researchNote"></p><div class="step-actions"><button class="text-button" data-back="1" data-j="back"></button><button class="primary" id="toLab" data-j="continue"></button></div></section>
+<section class="journey-step" data-step="3" hidden><div class="section-intro lab-intro"><div class="eyebrow" data-j="labTag"></div><h2 tabindex="-1" data-j="labTitle"></h2><p data-j="labBody"></p><div class="shape-picker"><span class="mono" data-j="shapeLabel"></span><div id="shapeButtons"></div></div></div>
+<div id="boundaryNotice" class="boundary-notice" role="status" hidden></div><section class="experiment" aria-label="Interactive experiment">
+<div class="organism" id="organism"><div class="stage-top"><span>ENTITY_001</span><span class="state-tag" id="stateTag">● STABLE / 稳定</span></div><div id="inputClosed" class="input-closed" hidden><span>INPUT CLOSED</span><p id="recoveryCopy"></p><button id="resumeInput" class="primary" hidden></button></div><canvas id="ascii" aria-label="An animated ASCII form whose rhythm responds to the tone of your input" role="img"></canvas><div class="orbit-note" id="orbitNote">I AM LISTENING<span>我在听。</span></div><div class="stage-bottom"><span>SIMULATED STATE</span><span id="signalLabel">SIGNAL INTEGRITY · 100%</span></div></div>
+<div class="control"><div class="panel-heading"><span class="section-number">01</span><h2 data-i="inputTitle">你说了什么</h2><span class="tiny">INPUT</span></div><label class="sr-only" for="message" data-i="inputTitle">你说了什么</label><textarea id="message" maxlength="300" placeholder="试着对它说一句话……" spellcheck="false"></textarea><div class="input-meta"><span id="tonePreview">语气尚未识别</span><span id="count">000 / 300</span></div><div class="examples"><span data-i="try">试一句</span><button data-example="kind" data-i="kind">温和 ↗</button><button data-example="direct" data-i="direct">急躁 ↗</button><button data-example="hostile" data-i="hostile">侮辱 ↗</button></div><button id="send" class="send"><span data-i="send">传入信息</span><span>↗</span></button><p class="keyboard" data-i="keyboard">CTRL / ⌘ + ENTER 发送</p><div class="response-section"><div class="panel-heading"><span class="section-number">02</span><h2 data-i="responseTitle">它如何回应</h2><span class="response-status" id="responseStatus">READY</span></div><div class="response" id="response" aria-live="polite" aria-atomic="true"><span class="response-text" id="responseText">我在这里。你想说些什么？</span><span class="cursor" aria-hidden="true"></span></div><div id="pauseIndicator" class="pause-indicator" aria-hidden="true"><i></i><i></i><i></i><span>BUFFER INTERRUPTED</span></div></div></div>
+</section>
+<section class="readout" aria-label="Response parameters"><div class="readout-title"><span class="tiny" data-i="readout">实时反馈</span><span class="readout-state" id="readoutState">OPEN TO YOU.</span></div><div class="metric"><span class="metric-label" data-i="latency">首字等待</span><div><strong id="latency">—</strong><span>ms</span></div><div class="track"><i id="latencyBar"></i></div></div><div class="metric"><span class="metric-label" data-i="fluency">回应流畅度</span><div><strong id="fluency">100</strong><span>%</span></div><div class="track"><i id="fluencyBar"></i></div></div><div class="metric"><span class="metric-label" data-i="load">累积负荷</span><div><strong id="load">00</strong><span>/ 100</span></div><div class="track"><i id="loadBar"></i></div></div><button class="reset" id="reset"><span>↺</span><span data-i="reset">重新开始</span></button></section>
+<section class="footnotes"><div><span class="footnote-index">↳</span><p data-i="explainer">同样是一次输入，语气改变了回应的节奏。<br>试着连续发送侮辱，再用温和的语言靠近它。</p></div><div class="method"><span data-i="prototype">交互推演 / 非真实 AI 对话</span><p data-i="method">语气词规则驱动视觉、延迟与停顿；不用于证明 AI 具有痛觉。<br>所有输入仅在当前页面处理，不上传或保存。</p><button id="methodButton" data-i="methodButton">查看交互逻辑 ↗</button></div></section>
+<details id="methodDetails"><summary data-i="methodSummary">交互逻辑</summary><p data-i="methodDetail">页面通过中英文语气词和标点估算输入强度。温和输入降低累积负荷，侮辱输入提高负荷。负荷共同控制首字等待、打字间隔、随机停顿和 ASCII 扰动。参数是为作品设计的反馈，不是来自 AI 的生理或情绪测量；隐喻、否定与复杂语境可能被误读。</p></details>
+
+<div class="rest-controls"><button id="pauseInput" class="secondary"></button><span id="restHint"></span></div><div class="step-actions lab-actions"><button class="text-button" data-back="2" data-j="back"></button><div class="lab-advance"><span id="labNeed" class="micro" data-j="labNeed"></span><div><button class="text-button" id="skipLab" data-j="skip"></button><button class="primary" id="labNext" data-j="labNext" disabled></button></div></div></div></section>
+<section class="journey-step" data-step="4" hidden><div class="section-intro"><div class="eyebrow" data-j="reflectionTag"></div><h2 tabindex="-1" data-j="reflectionTitle"></h2><p data-j="reflectionBody"></p></div><div class="reflection-layout"><aside class="memory"><span class="mono" data-j="beforeLabel"></span><blockquote id="firstChoiceSummary"></blockquote><div class="memory-line"></div><span class="mono" data-j="afterLabel"></span><p id="comparison" aria-live="polite"></p><span class="micro" data-j="comparisonNote"></span></aside><div id="secondChoices" class="choices"></div></div><div class="step-actions"><button class="text-button" data-back="3" data-j="back"></button><button class="primary" id="toTransfer" data-j="continue" disabled></button></div></section>
+<section class="journey-step" data-step="5" hidden><div class="section-intro"><div class="eyebrow" data-j="transferTag"></div><h2 tabindex="-1" data-j="transferTitle"></h2><p data-j="transferBody"></p></div><div id="intentionChoices" class="choices intention-choices"></div><div class="consent"><p class="micro" data-j="privacy"></p><div><button class="primary" id="contribute" data-j="contribute" disabled></button><button class="text-button" id="decline" data-j="decline"></button></div></div><div class="step-actions"><button class="text-button" data-back="4" data-j="back"></button><span class="mono"></span></div></section>
+<section class="journey-step collective" data-step="6" hidden><div class="section-intro"><div class="eyebrow" data-j="collectTag"></div><h2 tabindex="-1" data-j="collectTitle"></h2><p data-j="collectBody"></p></div><div class="collective-stage"><canvas id="collectiveCanvas" role="img" aria-label="A collective image of submitted before and after choices"></canvas><div class="field-top mono"><span>PARTICIPANT RESPONSES</span><span id="fieldCount">N = 000</span></div><div class="field-empty" id="fieldEmpty" data-j="empty"></div><div class="field-bottom mono"><span id="fieldLabels"></span><span>BEFORE / AFTER</span></div></div><div id="legend" class="field-legend"></div><div class="collective-stats"><div><strong id="totalRecords">0</strong><span data-j="total"></span></div><div><strong id="changedRecords">—</strong><span data-j="shift"></span></div><div><strong id="carryRecords">—</strong><span data-j="carry"></span></div><div><strong id="heldRecords">—</strong><span data-j="held"></span></div></div><p id="submissionNotice" class="micro" role="status"></p><div class="step-actions"><details class="field-method"><summary data-j="methodField"></summary><p data-j="fieldMethod"></p></details><button class="primary" id="nextPerson" data-j="nextPerson"></button></div><details class="data-tools"><summary data-j="manager"></summary><p class="micro" data-j="localNote"></p><div class="data-buttons"><button id="exportJson" data-j="exportJson"></button><button id="exportCsv" data-j="exportCsv"></button><button id="importButton" data-j="import"></button><input type="file" id="importFile" accept="application/json,.json" hidden></div><p id="dataNotice" role="status" class="micro"></p></details></section>
+
+ </div>
+ </main>
+ <footer><span>Royal College of Art · Across RCA</span><span data-x="footer"></span><a id="manageResponses" href="/admin" target="_blank" rel="noopener">Manage responses</a><button id="viewField" class="text-button" data-x="viewResponses"></button></footer>
+</div>
+</div>
+<dialog id="infoDialog"><button id="closeDialog" class="dialog-close" aria-label="Close">×</button><div id="dialogContent"></div></dialog>
+<noscript>Please enable JavaScript to take part in Machine Sensorium. 请启用 JavaScript。JavaScript를 활성화해 주세요.</noscript>
+</body></html>

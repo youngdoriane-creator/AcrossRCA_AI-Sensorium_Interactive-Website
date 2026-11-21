@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Machine Sensorium · 集中记录</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/admin.css"><script src="/admin.js" defer></script></head>
+<body>
+<header class="site-header"><a href="/" class="brand"><span class="rca-mark">RCA</span><span>Machine Sensorium</span></a><span class="prototype-label">EXHIBITION / OWNER VIEW</span></header>
+<main class="admin-main">
+<div class="admin-title"><div><p class="section-kicker">CENTRAL RESPONSE COLLECTION</p><h1>参与者选择记录</h1><p>所有手机的选择集中在这里，未完成的回答也会保留。</p></div><a class="secondary" href="/" target="_blank" rel="noopener">打开参与者页面</a></div>
+<div class="admin-stats"><section><span>做过选择</span><strong id="total">—</strong></section><section><span>已完成</span><strong id="completed">—</strong></section><section><span>未完成</span><strong id="incomplete">—</strong></section><section><span>前后选择改变</span><strong id="changed">—</strong></section></div>
+<div class="admin-tools"><div class="export-buttons"><a class="primary" href="/api/admin/export.docx">导出 Word 文档</a><a class="secondary" href="/api/admin/export.csv">导出 CSV 表格</a><a class="text-button" href="/api/admin/export.json">导出 JSON 备份</a></div><div><label for="statusFilter">显示</label> <select id="statusFilter"><option value="all">全部记录</option><option value="complete">已完成</option><option value="incomplete">未完成</option></select></div></div>
+<p id="status" class="micro" role="status">正在读取集中记录…</p>
+<p class="micro">同一会话持续更新为一条记录。未完成可能表示仍在体验或已离开。百分比仅比较已回答相应问题的记录。时间按当前设备时区显示。</p>
+<div class="table-scroll"><table><thead><tr><th>首次选择时间</th><th>会话编号</th><th>语言</th><th>第一次选择</th><th>再次选择</th><th>未来意向</th><th>状态</th><th>交互次数</th></tr></thead><tbody id="responseRows"></tbody></table></div>
+<p id="empty" hidden>目前还没有记录。参与者做出第一个选择后，记录会自动出现。</p>
+</main></body></html>

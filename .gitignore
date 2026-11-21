@@ -1,0 +1,6 @@
+dist/
+.local/
+.env
+.dev.vars
+node_modules/
+worker/assets.generated.js
