@@ -2086,3 +2086,10 @@ dialog p {
 .organism:has(.input-closed:not([hidden])) canvas {opacity:.45}
 @media(prefers-reduced-motion:reduce){.welcome-art canvas,.organism canvas{transition:none}}
 .organism:has(.input-closed:not([hidden])) .orbit-note {visibility:hidden}
+
+/* Recovery remains legible while the face visibly reassembles behind it. */
+.organism:has(.input-closed:not([hidden])) canvas {opacity:.85}
+.input-closed {background:linear-gradient(transparent 25%,rgba(16,27,39,.12) 50%,#101b27 100%);padding-bottom:36px}
+.input-closed>span {font-size:18px;letter-spacing:.14em}
+.input-closed p {margin:10px 0 14px}
+.orbit-note {bottom:38px}

@@ -218,7 +218,7 @@ function renderCards(){
  c().cards.forEach((card,i)=>{const d=text('details','','research-card'),summary=text('summary','');summary.append(text('span',card.tag,'mono'),text('h3',card.title),text('p',card.short,'card-short'));const action=text('span',c().openCard,'card-action');summary.appendChild(action);const body=text('div','','card-body');body.append(text('h4',c().cardObserved),text('p',card.observed),text('h4',c().cardLimit),text('p',card.limit));const q=text('div','','card-question');q.append(text('h4',c().cardQuestion),text('p',card.question));const a=text('a',c().cardSource,'card-source');a.href=card.url;a.target='_blank';a.rel='noopener noreferrer';body.append(q,a,text('span',card.source,'source-meta'));d.append(summary,body);d.open=!!open[i];action.textContent=c()[d.open?'closeCard':'openCard'];d.addEventListener('toggle',()=>{action.textContent=c()[d.open?'closeCard':'openCard'];if(d.open){participant.cards.add(i);queueSnapshot();}});$('researchCards').appendChild(d)})
 }
 function renderShapes(){
- $('faceKey').textContent={en:'VIRTUAL FACE / EXPRESSION FOLLOWS SYSTEM STATE',zh:'虚拟面孔 / 表情随模拟状态变化',ko:'가상 얼굴 / 시스템 상태에 따른 표정'}[lang];
+ $('faceKey').textContent={en:'LIVING SIGNAL / A FACE IN CONTINUOUS RECONSTRUCTION',zh:'流动的信号 / 持续重组中的面孔',ko:'흐르는 신호 / 계속 재구성되는 얼굴'}[lang];
 }
 
 function renderLocale(){
@@ -247,18 +247,20 @@ function reply(kind){return c().replies[kind==='kind'&&load>24?'recover':kind]}
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function transmit(){
  const value=$('message').value.trim();if(!value||running||protectionActive){if(!value)$('message').focus();return}if(participant.turns.length>=200){$('responseText').textContent=chrome().turnLimit;return;}
- const token=++epoch,tone=classify(value);$('boundaryNotice').hidden=true;running=true;paused=false;lastInput=value;lastTone=tone.kind;
+ const token=++epoch,tone=classify(value);$('boundaryNotice').hidden=true;running=true;paused=false;lastInput=value;lastTone=tone.kind;signalAt=performance.now();
  load=Math.max(0,Math.min(100,load+(tone.kind==='hostile'?22+tone.score*.40:tone.kind==='direct'?14+tone.score*.17:tone.kind==='kind'?-32:-7)));
+ if(tone.kind==='hostile')load=Math.max(82,load);
  const delay=Math.round(180+load*9+tone.score*2),start=performance.now();lastLatency=null;$('send').disabled=true;$('responseText').textContent='';$('responseStatus').textContent='PROCESSING';$('pauseIndicator').classList.remove('visible');refresh();
  await wait(delay);if(token!==epoch)return;lastLatency=Math.round(performance.now()-start);refresh();const chars=Array.from(reply(tone.kind)),every=load>=56?7:load>=24?13:0;const spacing=(lang==='zh'?22:12)+load*(lang==='zh'?.17:.09);$('responseStatus').textContent='RESPONDING';
  for(let i=0;i<chars.length;i++){
   if(token!==epoch)return;
+  if(tone.kind==='hostile'&&performance.now()-start>=3800){$('responseText').appendChild(document.createTextNode('…'));break}
   if(every&&i>0&&i%every===0){paused=true;$('responseStatus').textContent='BUFFERING';$('pauseIndicator').classList.add('visible');await wait(140+load*2);if(token!==epoch)return;paused=false;$('pauseIndicator').classList.remove('visible');$('responseStatus').textContent='RESPONDING'}
   $('responseText').appendChild(document.createTextNode(chars[i]));await wait(spacing);
  }
  if(token!==epoch)return;participant.turns.push({kind:tone.kind,intensity:tone.score,load:Math.round(load),latencyMs:lastLatency});queueSnapshot();running=false;paused=false;$('send').disabled=false;$('responseStatus').textContent=load>=56?'RESPONSE FRAGMENTED':'COMPLETE';refresh();if(load>=78)beginProtection();else if(load>=56){$('boundaryNotice').hidden=false;$('boundaryNotice').textContent=chrome().request;}
 }
-function resetLab(){clearProtection();epoch++;load=0;running=false;paused=false;lastInput='';lastTone='neutral';lastLatency=null;$('send').disabled=false;$('message').value='';$('responseText').textContent=c().initial;$('responseStatus').textContent='READY';$('pauseIndicator').classList.remove('visible');preview();refresh()}
+function resetLab(){clearProtection();epoch++;load=0;signalAt=0;running=false;paused=false;lastInput='';lastTone='neutral';lastLatency=null;$('send').disabled=false;$('message').value='';$('responseText').textContent=c().initial;$('responseStatus').textContent='READY';$('pauseIndicator').classList.remove('visible');preview();refresh()}
 function newSession(){document.querySelectorAll('.research-card').forEach(d=>d.open=false);participant=newParticipant();notice='';furthest=1;resetLab();renderLocale();show(1)}
 function queueSnapshot() {
  if (participant.before === null) return;
@@ -322,6 +324,7 @@ $('start').addEventListener('click',()=>{if(participant.completed)newSession();e
 $('message').addEventListener('input',preview);$('message').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();transmit()}});$('send').addEventListener('click',transmit);$('reset').addEventListener('click',resetLab);document.querySelectorAll('[data-example]').forEach(b=>b.addEventListener('click',()=>{$('message').value=c().examples[b.dataset.example];preview();$('message').focus()}));$('methodButton').addEventListener('click',()=>{const el=$('methodDetails');el.open=!el.open;if(el.open)el.scrollIntoView({behavior:reduced?'instant':'smooth',block:'nearest'})});$('exportJson').addEventListener('click',()=>exportData('json'));$('exportCsv').addEventListener('click',()=>exportData('csv'));$('importButton').addEventListener('click',()=>$('importFile').click());$('importFile').addEventListener('change',()=>importData($('importFile').files[0]));
 // Keep the collective trace as a separate 2D data visualization.
 let faceView=null;
+let signalAt=0;
 import('./face.js').then(module=>module.createFaceView()).then(view=>{faceView=view}).catch(error=>{console.error('Virtual face unavailable',error);document.querySelectorAll('.welcome-art,.organism').forEach(el=>el.dataset.face='unavailable')});
 const surfaces=['collectiveCanvas'].map(id=>{const canvas=$(id),ctx=canvas.getContext('2d'),surface={id,canvas,ctx,w:0,h:0};new ResizeObserver(()=>{const b=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,2);surface.w=b.width;surface.h=b.height;canvas.width=b.width*ratio;canvas.height=b.height*ratio;ctx.setTransform(ratio,0,0,ratio,0,0)}).observe(canvas);return surface});
 function hash(str){let n=0;for(let i=0;i<str.length;i++)n=(n*31+str.charCodeAt(i))|0;return(n>>>0)/4294967295}
@@ -338,7 +341,7 @@ function drawField(s){
 function animate(now){
  requestAnimationFrame(animate);if(document.hidden||now-lastFrame<(reduced?220:33))return;lastFrame=now;
  if(!reduced)phase+=.03;
- faceView?.update({now,step:activeRoute==='activity'?step:-1,load,running,paused,protectionActive,recoveryReady,lastTone,reduced});
+ faceView?.update({now,step:activeRoute==='activity'?step:-1,load,running,paused,protectionActive,recoveryReady,lastTone,reduced,signalAt,recoveryRemaining:Math.max(0,(recoveryUntil-Date.now())/6000)});
  if(activeRoute==='activity'&&step===6)for(const surface of surfaces)drawField(surface);
 }
 

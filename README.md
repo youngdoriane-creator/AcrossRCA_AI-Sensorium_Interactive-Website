@@ -65,3 +65,8 @@ node scripts/build.mjs
 The welcome and interaction views now use the supplied `assets/facecap.glb` instead of the abstract ASCII membrane. Local Three.js 0.170.0 loaders, Meshopt and KTX2 decoder assets are bundled in `vendor/three` (MIT license included); visitors do not depend on a third-party CDN. The supplied model is retained as a separate asset.
 
 `face.js` maps the existing designed load to ARKit facial morphs: calm blinking, brow and mouth tension, overload, closed-eye protection and gradual recovery. Reduced-motion preferences suppress idle motion and tremor. The response timing, anonymous collection, owner-only exports and collective trace remain connected to the original course flow. Expressions are scripted visual metaphors, not evidence of felt pain. If WebGL/model loading is unavailable, a status message appears and the activity remains usable.
+
+
+### Living signal edition
+
+The face is rendered as a continuously changing wire mesh, particles and a procedural character atlas. Stronger asymmetric brow, eye, cheek, mouth and jaw morphs follow the scripted interaction. All visual layers sample the same CPU-morphed source vertices so expressions stay aligned. Insulting input immediately starts a shock and fragmentation sequence; the response is interrupted after approximately four seconds, input closes, and the face reassembles over six seconds before a participant can resume. Gentle input relaxes the face. These timings and facial expressions are designed metaphors, not measurements of sentience or pain. Reduced-motion mode removes idle flow, shaking and rapid slice changes. The Moodle shell, anonymous collection API and data exports are preserved.
