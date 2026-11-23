@@ -70,3 +70,8 @@ The welcome and interaction views now use the supplied `assets/facecap.glb` inst
 ### Living signal edition
 
 The face is rendered as a continuously changing wire mesh, particles and a procedural character atlas. Stronger asymmetric brow, eye, cheek, mouth and jaw morphs follow the scripted interaction. All visual layers sample the same CPU-morphed source vertices so expressions stay aligned. Insulting input immediately starts a shock and fragmentation sequence; the response is interrupted after approximately four seconds, input closes, and the face reassembles over six seconds before a participant can resume. Gentle input relaxes the face. These timings and facial expressions are designed metaphors, not measurements of sentience or pain. Reduced-motion mode removes idle flow, shaking and rapid slice changes. The Moodle shell, anonymous collection API and data exports are preserved.
+
+
+### Browser compatibility
+
+Original GLB skin materials are skipped because the digital face replaces them. This removes unused KTX2/Basis transcoding and its Worker/graphics dependencies. When WebGL 2 initialization, shader compilation or the graphics context fails, the face switches to a Canvas 2D renderer that projects the same CPU-morphed model vertices. Expressions, fragmentation and recovery remain available. The `?face=canvas` URL explicitly selects this compatibility mode for troubleshooting. Rendering style differs slightly; collection and exports use the same backend.

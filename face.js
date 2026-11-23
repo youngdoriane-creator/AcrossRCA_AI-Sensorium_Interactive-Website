@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { GLTFLoader } from './vendor/three/examples/jsm/loaders/GLTFLoader.js';
-import { KTX2Loader } from './vendor/three/examples/jsm/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from './vendor/three/examples/jsm/libs/meshopt_decoder.module.js';
 const clamp=THREE.MathUtils.clamp;
 const random=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)};
@@ -106,14 +105,71 @@ function digitalMaterial(view,kind){
  material.customProgramCacheKey=()=>`sensorium-digital-${kind}-v1`;
  return material;
 }
-function setup(canvas,atlas){
- const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setClearColor(0x101b27,0);renderer.outputColorSpace=THREE.SRGBColorSpace;
+// Canvas fallback projects the SAME morphed 3D vertices, keeping expressions
+// and state transitions functional when WebGL 2 / GPU acceleration is unavailable.
+class CanvasFaceRenderer {
+ constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');if(!this.ctx)throw Error('Canvas unavailable');this.ratio=1;this.width=1;this.height=1;this.software=true}
+ setPixelRatio(ratio){this.ratio=ratio}
+ setClearColor(){}
+ setSize(width,height){this.width=width;this.height=height;this.canvas.width=Math.round(width*this.ratio);this.canvas.height=Math.round(height*this.ratio);this.ctx.setTransform(this.ratio,0,0,this.ratio,0,0)}
+ dispose(){this.ctx.clearRect(0,0,this.width,this.height)}
+ render(scene,camera){
+  const {ctx,width:w,height:h}=this,view=this.view,u=view.uniforms;
+  ctx.clearRect(0,0,w,h);scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
+  const time=u.uTime.value,fracture=u.uFracture.value,motion=u.uMotion.value,shock=u.uShock.value;
+  const p=new THREE.Vector3(),points=[];
+  scene.traverse(mesh=>{
+   if(!mesh.isMesh||mesh.renderOrder!==0)return;
+   const positions=mesh.geometry.attributes.position,projected=[];
+   for(let i=0;i<positions.count;i++){
+    p.fromBufferAttribute(positions,i).applyMatrix4(mesh.matrixWorld);
+    const seed=random(i),band=Math.floor(p.y*10),length=Math.hypot(p.x+.01,p.y+.01,p.z+.01)||1;
+    p.x+=motion*.012*(Math.sin(p.y*11+time*.85)+.5*Math.cos(p.x*13-time*.7));
+    p.z+=motion*.012*Math.sin(p.y*9-time*.65+seed*.25);
+    p.x+=fracture*(Math.sin(seed*91)*.58+(p.x+.01)/length*.24)+fracture*.2*Math.sin(band*5+Math.floor(time*7*motion))+shock*motion*.13*Math.sin(time*47+band);
+    p.y+=fracture*(Math.cos(seed*57)*.58+(p.y+.01)/length*.24);
+    p.z+=fracture*(Math.sin(seed*37)*.58+(p.z+.01)/length*.24);
+    const depth=p.z;p.project(camera);projected.push({x:(p.x*.5+.5)*w,y:(-.5*p.y+.5)*h,z:depth,seed});
+   }
+   const indices=mesh.geometry.index?.array;
+   ctx.strokeStyle='#b9d4df';ctx.lineWidth=.55;ctx.globalAlpha=.19;ctx.beginPath();
+   const count=indices?indices.length:positions.count;
+   for(let i=0;i<count;i+=3){const a=projected[indices?indices[i]:i],b=projected[indices?indices[i+1]:i+1],c=projected[indices?indices[i+2]:i+2];if(!a||!b||!c)continue;
+    if((b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x)>0)continue;
+    if(fracture>.1&&random(i)<fracture*.55)continue;
+    ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(a.x,a.y);
+   }ctx.stroke();points.push(...projected);
+  });
+  points.sort((a,b)=>a.z-b.z);ctx.fillStyle='#deedf1';ctx.textAlign='center';ctx.font='8px monospace';
+  for(const point of points){ctx.globalAlpha=.25+clamp((point.z+1)*.24,0,.6);const sweep=Math.sin(point.x/w*6+time*.28*motion);
+   if(point.seed>.83&&sweep>.1){ctx.fillText('01XS:+*#<>/{}=~.'[Math.floor(point.seed*97+time*.7*motion)%16],point.x,point.y)}else ctx.fillRect(point.x,point.y,1,1);
+  }ctx.globalAlpha=1;
+ }
+}
+function replacementCanvas(canvas){const fresh=canvas.cloneNode(false);canvas.replaceWith(fresh);return fresh}
+function attachPointer(view){
+ const canvas=view.canvas;
+ canvas.addEventListener('pointermove',e=>{const b=canvas.getBoundingClientRect();view.pointer.x=(e.clientX-b.left)/b.width-.5;view.pointer.y=(e.clientY-b.top)/b.height-.5});
+ canvas.addEventListener('pointerleave',()=>{view.pointer.x=0;view.pointer.y=0});
+}
+function useSoftware(view,reason){
+ if(view.renderer.software)return;
+ console.warn('Using compatible face renderer:',reason);
+ view.renderer.dispose();view.canvas=replacementCanvas(view.canvas);view.renderer=new CanvasFaceRenderer(view.canvas);view.renderer.view=view;view.renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));view.width=0;view.height=0;
+ view.canvas.parentElement.dataset.renderer='canvas';view.canvas.parentElement.dataset.face='ready';attachPointer(view);
+}
+function setup(canvas,atlas,forceSoftware){
+ let renderer;
+ if(!forceSoftware){try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'low-power'})}catch(error){console.warn('WebGL unavailable; using Canvas.',error);canvas=replacementCanvas(canvas)}}
+ if(!renderer)renderer=new CanvasFaceRenderer(canvas);
+ renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setClearColor(0x101b27,0);renderer.outputColorSpace=THREE.SRGBColorSpace;
  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(32,1,.1,50);camera.position.set(0,.08,5.7);
  const pivot=new THREE.Group();scene.add(pivot);const pointer={x:0,y:0};
  const uniforms={uTime:{value:0},uFracture:{value:0},uShock:{value:0},uMotion:{value:1},uAtlas:{value:atlas}};
- canvas.addEventListener('pointermove',e=>{const b=canvas.getBoundingClientRect();pointer.x=(e.clientX-b.left)/b.width-.5;pointer.y=(e.clientY-b.top)/b.height-.5});canvas.addEventListener('pointerleave',()=>{pointer.x=0;pointer.y=0});
- canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();canvas.parentElement.dataset.face='unavailable'});canvas.addEventListener('webglcontextrestored',()=>{canvas.parentElement.dataset.face='ready'});
- return {canvas,renderer,scene,camera,pivot,pointer,uniforms,meshes:[],width:0,height:0,lastNow:0};
+ const view={canvas,renderer,scene,camera,pivot,pointer,uniforms,meshes:[],width:0,height:0,lastNow:0};renderer.view=view;
+ canvas.parentElement.dataset.renderer=renderer.software?'canvas':'webgl';attachPointer(view);
+ if(!renderer.software){canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();queueMicrotask(()=>useSoftware(view,'graphics context lost'))});renderer.debug.onShaderError=()=>queueMicrotask(()=>useSoftware(view,'shader compilation failed'))}
+ return view;
 }
 function install(view,source){
  const model=source.clone(true);model.traverse(object=>{if(object.morphTargetInfluences)object.morphTargetInfluences.fill(0)});
@@ -144,14 +200,14 @@ function install(view,source){
  }
  view.canvas.parentElement.dataset.face='ready';
 }
-export async function createFaceView(){
- const views=[],atlas=glyphAtlas();let ktx;
+export async function createFaceView({forceSoftware=new URLSearchParams(location.search).get('face')==='canvas'}={}){
+ const views=[],atlas=glyphAtlas();
  try{
-  views.push(setup(document.getElementById('introAscii'),atlas),setup(document.getElementById('ascii'),atlas));
-  ktx=new KTX2Loader().setTranscoderPath('./vendor/three/examples/jsm/libs/basis/').setWorkerLimit(1).detectSupport(views[0].renderer);
-  const gltf=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).setKTX2Loader(ktx).loadAsync('./assets/facecap.glb');
-  views.forEach(view=>install(view,gltf.scene));views[0].pivot.scale.setScalar(.65);views[1].pivot.scale.setScalar(.65);ktx.dispose();
- }catch(error){ktx?.dispose();views.forEach(view=>view.renderer.dispose());atlas.dispose();throw error}
+  views.push(setup(document.getElementById('introAscii'),atlas,forceSoftware),setup(document.getElementById('ascii'),atlas,forceSoftware));
+  // These original skin textures are never displayed: skip material/texture decoding.
+  const gltf=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).register(()=>({name:'SensoriumUntextured',loadMaterial:()=>Promise.resolve(new THREE.MeshBasicMaterial())})).loadAsync('./assets/facecap.glb');
+  views.forEach(view=>install(view,gltf.scene));views[0].pivot.scale.setScalar(.65);views[1].pivot.scale.setScalar(.65);
+ }catch(error){views.forEach(view=>view.renderer.dispose());atlas.dispose();throw error}
  return {update(state){for(let i=0;i<views.length;i++){
   const view=views[i];if(state.step!==(i===0?0:3))continue;
   const b=view.canvas.getBoundingClientRect();if(!b.width||!b.height)continue;
@@ -168,6 +224,6 @@ export async function createFaceView(){
   view.pivot.rotation.y+=(yaw-view.pivot.rotation.y)*blend;view.pivot.rotation.x+=(pitch-view.pivot.rotation.x)*blend;
   view.pivot.position.y+=((i===1?.14:.16)+(closed?-.1:0)+(state.reduced?0:Math.sin(t*1.1)*.018)-view.pivot.position.y)*blend;
   view.pivot.rotation.z=state.reduced?0:Math.sin(t*32)*effect.shock*.055;
-  view.canvas.dataset.expression=effect.stage;view.renderer.render(view.scene,view.camera);
+  view.canvas.dataset.expression=effect.stage;try{view.renderer.render(view.scene,view.camera)}catch(error){if(view.renderer.software)throw error;useSoftware(view,error.message)}
  }}};
 }
