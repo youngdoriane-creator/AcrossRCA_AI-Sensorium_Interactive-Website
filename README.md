@@ -75,3 +75,13 @@ The face is rendered as a continuously changing wire mesh, particles and a proce
 ### Browser compatibility
 
 Original GLB skin materials are skipped because the digital face replaces them. This removes unused KTX2/Basis transcoding and its Worker/graphics dependencies. When WebGL 2 initialization, shader compilation or the graphics context fails, the face switches to a Canvas 2D renderer that projects the same CPU-morphed model vertices. Expressions, fragmentation and recovery remain available. The `?face=canvas` URL explicitly selects this compatibility mode for troubleshooting. Rendering style differs slightly; collection and exports use the same backend.
+
+
+## Sound demo and audio track
+
+Original media files are available as [GitHub Release attachments](https://github.com/youngdoriane-creator/AcrossRCA_AI-Sensorium_Interactive-Website/releases/tag/sound-demo-2026-11-23):
+
+- [Interaction demonstration with sound — MOV, 83.7 MiB](https://github.com/youngdoriane-creator/AcrossRCA_AI-Sensorium_Interactive-Website/releases/download/sound-demo-2026-11-23/Machine-Sensorium-Sound-Demo-2.mov)
+- [Separate sound-effects track — WAV, 24.0 MiB](https://github.com/youngdoriane-creator/AcrossRCA_AI-Sensorium_Interactive-Website/releases/download/sound-demo-2026-11-23/Machine-Sensorium-Sound-Track-1.wav)
+
+Download filenames use English for compatibility. File contents match the supplied originals; SHA-256 checksums were verified after upload. Release assets are downloaded separately from the source-code ZIP.
