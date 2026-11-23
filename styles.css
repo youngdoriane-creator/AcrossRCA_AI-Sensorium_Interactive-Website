@@ -2077,3 +2077,12 @@ dialog p {
   color: #7a8b9b;
   font-size: 11px;
 }
+
+/* Virtual face: shared cool material, restrained motion, existing course shell. */
+.face-key {margin-top:20px;color:#627583;font-size:12px;letter-spacing:.07em}
+.welcome-art canvas,.organism canvas {transition:opacity .8s ease}
+.welcome-art[data-face="unavailable"]::after,.organism[data-face="unavailable"]::after {content:'FACE VIEW UNAVAILABLE · THE ACTIVITY CAN CONTINUE';position:absolute;inset:38% 20px auto;text-align:center;color:#aabac7;font:12px/1.8 monospace;letter-spacing:.08em}
+.input-closed {background:linear-gradient(transparent 15%,rgba(16,27,39,.6) 40%,#101b27 100%);justify-content:flex-end;padding-bottom:65px}
+.organism:has(.input-closed:not([hidden])) canvas {opacity:.45}
+@media(prefers-reduced-motion:reduce){.welcome-art canvas,.organism canvas{transition:none}}
+.organism:has(.input-closed:not([hidden])) .orbit-note {visibility:hidden}

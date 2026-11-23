@@ -58,3 +58,10 @@ node scripts/build.mjs
 未完成包含仍在体验和已离开的会话。前后改变比例仅以两次选择均已回答的会话计算，未来意向比例仅以该题已回答者计算。结果图最多展示最新 1000 条具备前后答案及未来意向的轨迹，汇总计数包含全部记录。管理表格及导出最多显示最近 10000 条，超过时页面会提示。
 
 文字回复、负荷和保护性暂停均为艺术模拟。当前版本未接入学校 Moodle 的账号和课程发布接口。
+
+
+### Virtual face edition
+
+The welcome and interaction views now use the supplied `assets/facecap.glb` instead of the abstract ASCII membrane. Local Three.js 0.170.0 loaders, Meshopt and KTX2 decoder assets are bundled in `vendor/three` (MIT license included); visitors do not depend on a third-party CDN. The supplied model is retained as a separate asset.
+
+`face.js` maps the existing designed load to ARKit facial morphs: calm blinking, brow and mouth tension, overload, closed-eye protection and gradual recovery. Reduced-motion preferences suppress idle motion and tremor. The response timing, anonymous collection, owner-only exports and collective trace remain connected to the original course flow. Expressions are scripted visual metaphors, not evidence of felt pain. If WebGL/model loading is unavailable, a status message appears and the activity remains usable.

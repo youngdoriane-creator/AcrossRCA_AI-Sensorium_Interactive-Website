@@ -218,8 +218,9 @@ function renderCards(){
  c().cards.forEach((card,i)=>{const d=text('details','','research-card'),summary=text('summary','');summary.append(text('span',card.tag,'mono'),text('h3',card.title),text('p',card.short,'card-short'));const action=text('span',c().openCard,'card-action');summary.appendChild(action);const body=text('div','','card-body');body.append(text('h4',c().cardObserved),text('p',card.observed),text('h4',c().cardLimit),text('p',card.limit));const q=text('div','','card-question');q.append(text('h4',c().cardQuestion),text('p',card.question));const a=text('a',c().cardSource,'card-source');a.href=card.url;a.target='_blank';a.rel='noopener noreferrer';body.append(q,a,text('span',card.source,'source-meta'));d.append(summary,body);d.open=!!open[i];action.textContent=c()[d.open?'closeCard':'openCard'];d.addEventListener('toggle',()=>{action.textContent=c()[d.open?'closeCard':'openCard'];if(d.open){participant.cards.add(i);queueSnapshot();}});$('researchCards').appendChild(d)})
 }
 function renderShapes(){
- $('shapeButtons').replaceChildren();c().shapes.forEach((label,i)=>{const b=text('button',label);b.setAttribute('aria-pressed',String(shape===i));b.addEventListener('click',()=>{shape=i;renderShapes()});$('shapeButtons').appendChild(b)})
+ $('faceKey').textContent={en:'VIRTUAL FACE / EXPRESSION FOLLOWS SYSTEM STATE',zh:'虚拟面孔 / 表情随模拟状态变化',ko:'가상 얼굴 / 시스템 상태에 따른 표정'}[lang];
 }
+
 function renderLocale(){
  document.documentElement.lang={zh:'zh-CN',en:'en',ko:'ko'}[lang];document.body.dataset.locale=lang;$('locale').value=lang;
  document.querySelectorAll('[data-j],[data-i]').forEach(el=>{const key=el.dataset.j||el.dataset.i;if(typeof c()[key]==='string')el.innerHTML=c()[key]});
@@ -319,24 +320,10 @@ async function importData(file){
 // Participant navigation.
 $('start').addEventListener('click',()=>{if(participant.completed)newSession();else show(1)});$('home').addEventListener('click',()=>routeTo('hub'));document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>show(Number(b.dataset.back))));$('toLab').addEventListener('click',()=>show(3));$('toTransfer').addEventListener('click',()=>{if(participant.after!==null)show(5)});$('labNext').addEventListener('click',()=>{if(participant.turns.length&&!running&&!protectionActive)show(4)});$('skipLab').addEventListener('click',()=>{participant.skipped=participant.turns.length===0;resetLab();show(4)});$('contribute').addEventListener('click',()=>finish(true));$('decline').addEventListener('click',()=>finish(false));$('nextPerson').addEventListener('click',newSession);$('viewField').addEventListener('click',()=>show(6));$('locale').addEventListener('change',()=>{const previous=lang,newLang=$('locale').value;if(!COPY[newLang])return;if(running){epoch++;running=false;paused=false;$('send').disabled=false;$('pauseIndicator').classList.remove('visible');$('responseStatus').textContent='READY'}lang=newLang;for(const key of Object.keys(COPY[previous].examples))if($('message').value===COPY[previous].examples[key]){$('message').value=c().examples[key];break}renderLocale()});
 $('message').addEventListener('input',preview);$('message').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();transmit()}});$('send').addEventListener('click',transmit);$('reset').addEventListener('click',resetLab);document.querySelectorAll('[data-example]').forEach(b=>b.addEventListener('click',()=>{$('message').value=c().examples[b.dataset.example];preview();$('message').focus()}));$('methodButton').addEventListener('click',()=>{const el=$('methodDetails');el.open=!el.open;if(el.open)el.scrollIntoView({behavior:reduced?'instant':'smooth',block:'nearest'})});$('exportJson').addEventListener('click',()=>exportData('json'));$('exportCsv').addEventListener('click',()=>exportData('csv'));$('importButton').addEventListener('click',()=>$('importFile').click());$('importFile').addEventListener('change',()=>importData($('importFile').files[0]));
-// Iridescent ASCII membranes. The same material unfolds into different forms.
-const surfaces=['ascii','introAscii','collectiveCanvas'].map(id=>{const canvas=$(id),ctx=canvas.getContext('2d'),surface={id,canvas,ctx,w:0,h:0};new ResizeObserver(()=>{const b=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,2);surface.w=b.width;surface.h=b.height;canvas.width=b.width*ratio;canvas.height=b.height*ratio;ctx.setTransform(ratio,0,0,ratio,0,0)}).observe(canvas);return surface});
-let pointer={x:0,y:0};$('ascii').addEventListener('pointermove',e=>{const b=$('ascii').getBoundingClientRect();pointer={x:(e.clientX-b.left)/b.width-.5,y:(e.clientY-b.top)/b.height-.5}});$('ascii').addEventListener('pointerleave',()=>pointer={x:0,y:0});
-function drawEntity(s,hero){
- const {ctx,w,h}=s;if(!w||!h)return;ctx.clearRect(0,0,w,h);const stress=hero?0:load/100,form=hero?1:shape,t=phase*(1-stress*.45),scale=Math.min(w*.28,h*.31),cx=w*.5,cy=h*(hero?.48:.45),points=[];
- const rotation=.35+t*.17+pointer.x*.15,tilt=.65+Math.sin(t*.23)*.28,co=Math.cos(rotation),si=Math.sin(rotation),ct=Math.cos(tilt),st=Math.sin(tilt);
- const fs=w<440?7.5:8;ctx.font=fs+'px Courier New';ctx.textAlign='center';
- for(let u=0;u<Math.PI*2;u+=.077){for(let v=0;v<Math.PI*2;v+=.125){
-  const petals=form===1?5:form===2?2:3,fold=1+.14*Math.cos(u*petals+t*.7)+.08*Math.sin(v*3-t),radius=(.70+.31*Math.cos(v))*fold;
-  let x=radius*Math.cos(u),y=radius*Math.sin(u),z=(form===2?.20:.42)*Math.sin(v)+.09*Math.sin(u*petals+t);if(form===1){x*=1+.11*Math.cos(u*5);y*=1+.11*Math.cos(u*5)}
-  const y1=y*ct-z*st,z1=y*st+z*ct,x1=x*co+z1*si,z2=-x*si+z1*co,p=3.2/(3.2-z2);
-  let sx=cx+x1*scale*p,sy=cy+y1*scale*p;const band=Math.floor(sy/15),fracture=stress>.35&&Math.sin(band*2.3+Math.floor(t*2))>.6;
-  if(fracture){sx+=Math.sin(band*6.1)*stress*30;sy+=Math.cos(band*1.9)*stress*7;if((Math.floor(u*50+v*50)%11)<stress*3)continue}
-  const light=(Math.sin(u+v*.7-t*.3)+1)/2,shade=light>.75?'#b98b74':light>.53?'#929bb6':light>.28?'#879b7f':'#c1ae80';const chars='·.:;+=*#';const char=paused&&stress>.4&&Math.floor(u*10)%5===0?'_':chars[Math.min(7,Math.floor(1+light*6))];
-  points.push({x:sx,y:sy,z:z2,color:stress>.5&&light>.65?'#ad7d66':shade,alpha:.3+(z2+1)*.25,char});
- }}points.sort((a,b)=>a.z-b.z);for(const p of points){ctx.globalAlpha=p.alpha;ctx.fillStyle=p.color;ctx.fillText(p.char,p.x,p.y)}ctx.globalAlpha=1;
- if(!hero){ctx.strokeStyle='#a0ac9355';const k=Math.min(w,h)*.32;for(const [dx,dy]of[[-1,-1],[1,-1],[-1,1],[1,1]]){const x=cx+dx*k,y=cy+dy*k;ctx.beginPath();ctx.moveTo(x-dx*7,y);ctx.lineTo(x,y);ctx.lineTo(x,y-dy*7);ctx.stroke()}}
-}
+// Keep the collective trace as a separate 2D data visualization.
+let faceView=null;
+import('./face.js').then(module=>module.createFaceView()).then(view=>{faceView=view}).catch(error=>{console.error('Virtual face unavailable',error);document.querySelectorAll('.welcome-art,.organism').forEach(el=>el.dataset.face='unavailable')});
+const surfaces=['collectiveCanvas'].map(id=>{const canvas=$(id),ctx=canvas.getContext('2d'),surface={id,canvas,ctx,w:0,h:0};new ResizeObserver(()=>{const b=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,2);surface.w=b.width;surface.h=b.height;canvas.width=b.width*ratio;canvas.height=b.height*ratio;ctx.setTransform(ratio,0,0,ratio,0,0)}).observe(canvas);return surface});
 function hash(str){let n=0;for(let i=0;i<str.length;i++)n=(n*31+str.charCodeAt(i))|0;return(n>>>0)/4294967295}
 function drawField(s){
  const {ctx,w,h}=s;if(!w||!h)return;ctx.clearRect(0,0,w,h);const n=records.length,pad=w<600?45:85,xs=[pad,(w/2),w-pad],top=h*.28,bottom=h*.74;
@@ -348,7 +335,13 @@ function drawField(s){
  for(let i=0;i<n;i++){const r=records[i],seed=hash(r.id),jitter=(seed-.5)*Math.min(85,w*.1),x1=xs[r.before]+jitter,x2=xs[r.after]+jitter*.8,y1=top+(seed-.5)*25,y2=bottom+(seed-.5)*25;ctx.strokeStyle=colors[r.intention];ctx.globalAlpha=Math.max(.05,Math.min(.52,1.7/Math.sqrt(n)));ctx.beginPath();ctx.moveTo(x1,y1);ctx.bezierCurveTo(x1+(seed-.5)*w*.12,h*.45,x2-(seed-.5)*w*.12,h*.56,x2,y2);ctx.stroke();ctx.globalAlpha=n>100?.45:.8;ctx.fillStyle=colors[r.intention];ctx.beginPath();ctx.arc(x2,y2,n>300?1.1:2.3,0,Math.PI*2);ctx.fill();ctx.globalAlpha=.5;ctx.fillStyle='#849477';ctx.fillRect(x1-1,y1-1,2,2)}ctx.globalAlpha=1;
  ctx.font='8px Courier New';ctx.textAlign='left';ctx.fillStyle='#7f8c74';ctx.fillText(lang==='zh'?'第一次选择':lang==='ko'?'처음 선택':'FIRST CHOICE',18,top-23);ctx.fillText(lang==='zh'?'再次选择':lang==='ko'?'다시 선택':'SECOND CHOICE',18,bottom+36);
 }
-function animate(now){requestAnimationFrame(animate);if(document.hidden||now-lastFrame<(reduced?220:65))return;lastFrame=now;if(!reduced&&(!paused||Math.floor(now/65)%5===0))phase+=.03;for(const s of surfaces){if(s.id==='introAscii'&&step===0)drawEntity(s,true);else if(s.id==='ascii'&&step===3)drawEntity(s,false);else if(s.id==='collectiveCanvas'&&step===6)drawField(s)}}
+function animate(now){
+ requestAnimationFrame(animate);if(document.hidden||now-lastFrame<(reduced?220:33))return;lastFrame=now;
+ if(!reduced)phase+=.03;
+ faceView?.update({now,step:activeRoute==='activity'?step:-1,load,running,paused,protectionActive,recoveryReady,lastTone,reduced});
+ if(activeRoute==='activity'&&step===6)for(const surface of surfaces)drawField(surface);
+}
+
 bindShell();renderLocale();routeTo('courses');requestAnimationFrame(animate);
 
 })();
